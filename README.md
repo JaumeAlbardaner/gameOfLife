@@ -1,10 +1,9 @@
+<!-- Readme file made by Kuntaro -->
+
 # Game of Life
 
 In this repository, we include the code necessary to run the game of life specified in the Embedded & Real Time Systems course taught at the MS in Automatic Control and Robotics @ UPC.
 
-<!-- <p align="center">
-   <img src =https://github.com/JaumeAlbardaner/ninjacar_mppi/blob/master/gif/ninjacar.gif>
-</p> -->
 ## Contents
 
 1. [Rules](#1-rules)
@@ -93,12 +92,29 @@ Because of the rules specified previously, different structures get generated. T
 </center>
 
 
-
-
-
-
 ## 2. How to run
-Put one feet in front of the other as fast as possible
+Start by git cloning this repository locally:
+```
+mkdir -p ~/git && cd ~/git
+git clone https://github.com/JaumeAlbardaner/gameOfLife.git
+```
+
+Compile the C code:
+```
+gcc -o game game.c
+```
+
+Run it :tada:
+``` 
+cd ~/git && ./game
+```
 
 ## 3. Troubleshooting
-dunno
+
+```
+,--------.  ,-----.  ,------.    ,-----.  
+'--.  .--' '  .-.  ' |  .-.  \  '  .-.  ' 
+   |  |    |  | |  | |  |  \  : |  | |  | 
+   |  |    '  '-'  ' |  '--'  / '  '-'  ' 
+   `--'     `-----'  `-------'   `-----'  
+```
