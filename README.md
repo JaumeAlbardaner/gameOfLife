@@ -109,6 +109,45 @@ Run it :tada:
 cd ~/git && ./game
 ```
 
+Once you run it, you may select the dimensions of the world as well as what structure you want to simulate from:
+<center>
+<table border= 1px width  ="70%">
+    <thead>
+        <tr> 
+            <th><center>Name</th>
+            <th><center>Command #</th>
+            <th><center>Preview</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><center>The R-Pentomino</td>
+            <td><center>1</td>
+            <td><center><img alt="block gif" src="https://upload.wikimedia.org/wikipedia/commons/1/1c/Game_of_life_fpento.svg" />
+            </td>
+        </tr>
+        <tr>
+            <td><center>Diehard</td>
+            <td><center>2</td>
+            <td><center><img alt="block gif" src="https://upload.wikimedia.org/wikipedia/commons/9/99/Game_of_life_diehard.svg" />
+            </td>
+        </tr>
+        <tr>
+            <td><center>Acorn</td>
+            <td><center>3</td>
+            <td><center><img alt="block gif" src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Game_of_life_acorn.svg" />
+            </td>
+        </tr>
+        <tr>
+            <td><center>Random</td>
+            <td><center>else</td>
+            <td><center>-
+            </td>
+        </tr>
+    </tbody>
+</table>
+</center>
+
 ## 3. Troubleshooting
 
 ```
