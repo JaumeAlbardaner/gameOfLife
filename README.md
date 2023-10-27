@@ -22,8 +22,8 @@ In this repository, we include the code necessary to run the game of life specif
 
 Because of the rules specified previously, different structures get generated. They are categorized into three main groups depending if they are static(`still lifes`), if they don't move but change pattern (`oscillators`), and the last ones are those that move (`spaceships`).
 
-
-<table border= 1px>
+<center>
+<table border= 1px width  ="70%">
     <thead>
         <tr> 
             <th colspan=2><center>Still Lives</th>
@@ -90,7 +90,7 @@ Because of the rules specified previously, different structures get generated. T
         </tr>
     </tbody>
 </table>
-
+</center>
 
 
 
