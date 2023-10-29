@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 // global variables needed
 int **grid;
@@ -159,17 +160,20 @@ void printGrid(int **grid){
     for (int i = 0; i < Grid_rows; i++) {
         for (int j = 0; j < Grid_col; j++) {
             if(grid[i][j] == 1){
-                printf("X");
+                addstr("X");
             } else {
-                printf(" ");
+                addstr(" ");
             };
         }
-        printf("\n");
+        addstr("\n");
     }
+    refresh();
 }
 
 int main() {
     int **grid1;
+    initscr();
+
     grid1 = createGrid();
     return 0;
     printGrid(grid1);
