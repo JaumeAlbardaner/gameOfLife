@@ -101,17 +101,18 @@ git clone https://github.com/JaumeAlbardaner/gameOfLife.git
 
 Compile the C code:
 ```
-gcc -o game game.c
+make
 ```
 
 Run it :tada:
 ``` 
-cd ~/git && ./game
+cd ~/git/gameOfLife && ./game
 ```
 
 Once you run it, you may select the dimensions of the world as well as what structure you want to simulate from:
+
 <center>
-<table border= 1px width  ="70%">
+<table border= 1px>
     <thead>
         <tr> 
             <th><center>Name</th>
