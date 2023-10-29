@@ -33,7 +33,7 @@ game: $(OBJ)
 	$(info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%)
 	$(info )
 	$(info )
-	
+
 	gcc  -o $@ $^  $(LDFLAGS) $(CFLAGS)
 
 clean:
