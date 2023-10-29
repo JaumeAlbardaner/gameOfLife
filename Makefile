@@ -1,9 +1,11 @@
 CC = gcc
 CFLAGS = -Wall -I/usr/include/ -I.
 LDFLAGS = -lncurses 
-OBJ = game.c
+OBJ = game.c gameDyn.c
 
-game: $(OBJ)
+all: printLogo game gameDyn
+	
+printLogo:
 	$(info  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%)
 	$(info  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%)
 	$(info %   .::::::::      :::       :::   :::   :::::::::: %)
@@ -34,7 +36,11 @@ game: $(OBJ)
 	$(info )
 	$(info )
 
+gameDyn: gameDyn.c
+	gcc  -o $@ $^  $(LDFLAGS) $(CFLAGS)
+
+game: game.c
 	gcc  -o $@ $^  $(LDFLAGS) $(CFLAGS)
 
 clean:
-	rm -f game 
+	rm -f game gameDyn
