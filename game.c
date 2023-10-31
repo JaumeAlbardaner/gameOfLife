@@ -16,10 +16,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-#include <ncurses.h>
 
 // global variables needed
 int **grid;
+int **temp_grid;
 // Create a space were the game develop
 int Grid_rows;
 int Grid_col;
@@ -30,18 +30,38 @@ int **createGrid(){
     scanf("%d", &Grid_rows);
     printf("Enter number of columns: ");
     scanf("%d", &Grid_col);
-    printf("Shape of grid: %d, %d", Grid_rows, Grid_col);
+    printf("Shape of grid: %d, %d \n", Grid_rows, Grid_col);
 
-    // grid[Grid_rows][Grid_col]; // Create a Grid
+    // grid[Grid_rows][Grid_col]; 
+    // Allocate memory for the grid array dynamically
+    grid = malloc(sizeof(int *) * Grid_rows); // Create a Grid
+    for (int i = 0; i < Grid_rows; i++) {
+        grid[i] = malloc(sizeof(int) * Grid_col);
+    }
     // set all the values of grid to 0
-    printf("Shape of grid: %d", sizeof(*grid));
     for (int i = 0; i < Grid_rows; i++) {
         for (int j = 0; j < Grid_col; j++) {
             grid[i][j] = 0;
         }
     }
     return grid;
-} 
+}
+
+// To have a better experience at the moment of visualize the grid, we will create
+// a function that show us the grid but instead of showing us 0 will show a blank
+// space and intead of 1 will present a "X"
+void printGrid(int **grid){
+    for (int i = 0; i < Grid_rows; i++) {
+        for (int j = 0; j < Grid_col; j++) {
+            if(grid[i][j] == 1){
+                printf("X");
+            } else {
+                printf(":");
+            };
+        }
+        printf("\n");
+    }
+}
 
 // Set initial conditions
 int **initial(int **grid){
@@ -115,10 +135,16 @@ int **initial(int **grid){
 
 // All the game is based on counting how many neighbors we have, thats why we will
 // create a function that will coun the number of neighbors in each interaction
-int Neighbors(int x, int y) {
+int Neighbors(int x, int y, int **grid) {
     int Num_neighbors = 0;
     for (int i = x-1; i <= x+1; i++) {
+        if(i < 0 || i >= Grid_rows){
+            continue;
+        }
         for (int j = y-1; j <= y+1; j++) {
+            if(j < 0 || i >= Grid_col){
+                continue;
+            }
             Num_neighbors += grid[i][j]; // add one if is 1 (neighbor)
         }
     }
@@ -127,10 +153,21 @@ int Neighbors(int x, int y) {
 
 //Update the grid for each map
 int **newGrid(int **grid){
-    int **temp_grid;
+    temp_grid = malloc(sizeof(int *) * Grid_rows); // Create a Grid
+    for (int i = 0; i < Grid_rows; i++) {
+        temp_grid[i] = malloc(sizeof(int) * Grid_col);
+    }
+    // set all the values of temp_grid to 0
     for (int i = 0; i < Grid_rows; i++) {
         for (int j = 0; j < Grid_col; j++) {
-            int neighbors = Neighbors(i,j);
+            temp_grid[i][j] = 0;
+        }
+    }
+    printf("Temp_grid: \n");
+    printGrid(temp_grid);
+    for (int i = 0; i < Grid_rows; i++) {
+        for (int j = 0; j < Grid_col; j++) {
+            int neighbors = Neighbors(i,j, grid);
             // Solitude
             if(neighbors <= 1){
                 temp_grid[i,j] = 0;
@@ -144,46 +181,39 @@ int **newGrid(int **grid){
             }
         }
     }
+    printf("Temp_grid: \n");
+    printGrid(temp_grid);
     // Copy temporary grid to original one
     for (int i = 0; i < Grid_rows; i++) {
         for (int j = 0; j < Grid_col; j++) {
             grid[i][j] = temp_grid[i][j];
         }
     }
+    // Free memory
+    for (int i = 0; i < Grid_rows; i++) {
+        free(temp_grid[i]);
+    }
+    free(temp_grid);
     return grid;
 }
 
-// To have a better experience at the moment of visualize the grid, we will create
-// a function that show us the grid but instead of showing us 0 will show a blank
-// space and intead of 1 will present a "X"
-void printGrid(int **grid){
-    for (int i = 0; i < Grid_rows; i++) {
-        for (int j = 0; j < Grid_col; j++) {
-            if(grid[i][j] == 1){
-                addstr("X");
-            } else {
-                addstr(" ");
-            };
-        }
-        addstr("\n");
-    }
-    refresh();
-}
+
 
 int main() {
-    int **grid1;
-    initscr();
-
-    grid1 = createGrid();
-    return 0;
-    printGrid(grid1);
-
-    grid1 = initial(grid1);
+    int **grid;
+    grid = createGrid();
+    grid = initial(grid);
     while (1) {
-        system("clear"); //"cls" or "clear"
-        printGrid(grid1);
-        grid1 = newGrid(grid1);
+        //system("clear"); //"cls" or "clear"
+        printGrid(grid);
+        grid = newGrid(grid);
         usleep(1000000); // Sleep for 1 second
     }
+    
+    // Free memory
+    for (int i = 0; i < Grid_rows; i++) {
+        free(grid[i]);
+    }
+    free(grid);    
     return 0;
 }
