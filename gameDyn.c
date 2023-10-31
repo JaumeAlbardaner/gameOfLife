@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <signal.h> // To catch SIGINT
 #include <ncurses.h>
 
 
@@ -25,6 +26,14 @@ unsigned char **grid;
 // Create a space were the game develop
 unsigned int Grid_rows;
 unsigned int Grid_col;
+
+
+// Flag that stops game if SIGINT is detected
+static volatile int keepRunning = 1;
+
+void intHandler(int dummy) {
+    keepRunning = 0;
+}
 
 unsigned char **initGrid(){
 
@@ -47,6 +56,8 @@ void createGrid(){
     scanf("%d", &Grid_rows);
     printf("Enter number of columns: ");
     scanf("%d", &Grid_col);
+
+    resize_term(Grid_rows, Grid_col);
 
     grid = initGrid();
 }
@@ -128,10 +139,13 @@ int Neighbors(int x, int y) {
     for (int i = x-1; i <= x+1; i++) {
         for (int j = y-1; j <= y+1; j++) {
             //If outside grid, skip - Kuntaro
-            if ((i<0 || i>=Grid_rows) && (j<0 || j>=Grid_col)){
+            if (i<0 || i>=Grid_rows || j<0 || j>=Grid_col){
                 continue;
             }
-            printf("X");
+            // Skip cell we're evaluating
+            if(i == x && j == y){
+                continue;
+            }
             Num_neighbors += grid[i][j]; // add one if is 1 (neighbor)
         }
     }
@@ -143,8 +157,8 @@ void newGrid(){
     unsigned char **temp_grid = initGrid();
     for (int i = 0; i < Grid_rows; i++) {
         for (int j = 0; j < Grid_col; j++) {
-            int neighbors = Neighbors(i,j);
-            // Solitude
+            int neighbors = Neighbors(i,j);            
+            // Under-population
             if(neighbors <= 1){
                 temp_grid[i][j] = 0;
             }
@@ -153,7 +167,10 @@ void newGrid(){
                 temp_grid[i][j] = 0;
             }
             // Survives
-            else {
+            else if(neighbors==2){
+                temp_grid[i][j] = grid[i][j];
+            }
+            else if(neighbors==3){
                 temp_grid[i][j] = 1;
             }
         }
@@ -164,37 +181,44 @@ void newGrid(){
             grid[i][j] = temp_grid[i][j];
         }
     }
+
+    // Free calloc after use
+    free(temp_grid);
 }
 
 // To have a better experience at the moment of visualize the grid, we will create
 // a function that show us the grid but instead of showing us 0 will show a blank
 // space and intead of 1 will present a "X"
 void printGrid(){
+    clear();
     for (int i = 0; i < Grid_rows; i++) {
         for (int j = 0; j < Grid_col; j++) {
+            move(i, j);
             if(grid[i][j] == 1){
-                printf("X");
+                printw("X");
             } else {
-                printf(" ");
+                printw(" ");
             };
         }
-        printf("\n");
+        // printf  ("\n");
     }
     refresh();
 }
 
 int main() {
+    signal(SIGINT, intHandler);
 
     createGrid();
     initial();
-    return 0;
-    //initscr();
-    //printGrid(grid1);
-    while (1) {
-        system("clear"); //"cls" or "clear"
+    initscr();    
+    
+    while (keepRunning) {
         printGrid();
         newGrid();
-        usleep(1000000); // Sleep for 1 second
+        usleep(100000); // Sleep for 1 second
     }
+    free(grid);
+    endwin();
+    // printf("Caught SIGINT\n");
     return 0;
 }
