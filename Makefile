@@ -36,6 +36,10 @@ printLogo:
 	$(info )
 	$(info )
 
+gameDyn-debug: gameDyn.c
+	gcc  -o $@ $^  $(LDFLAGS) $(CFLAGS) -g
+
+
 gameDyn: gameDyn.c
 	gcc  -o $@ $^  $(LDFLAGS) $(CFLAGS)
 
