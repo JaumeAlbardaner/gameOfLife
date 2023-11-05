@@ -1,4 +1,4 @@
-<!-- Readme file made by Kuntaro -->
+<!-- Readme file made by Coder 1 -->
 
 # Game of Life
 
@@ -106,11 +106,6 @@ make
 
 Run it :tada:
 
-*Bruno's version*
-``` 
-cd ~/git/gameOfLife && ./game
-```
-*Yauma's version*
 ``` 
 cd ~/git/gameOfLife && ./gameDyn
 ```
