@@ -6,12 +6,16 @@
 // Each cell with one or no neighbors dies, as if by solitude.
 // Each cell with four or more neighbors dies, as if by overpopulation.
 // Each cell with two or three neighbors survives.
+// Each dead cell with exactly three neighbors becomes a live cell.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Team-work Strategy
-// Set everything as functions
+// Coder 1 works on repository and code
+// Coder 2 works on code
+// Coder 3 works on report
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -26,6 +30,7 @@ unsigned char **grid;
 // Create a space were the game develop
 unsigned int Grid_rows;
 unsigned int Grid_col;
+unsigned int scenary;
 
 
 // Flag that stops game if SIGINT is detected
@@ -49,13 +54,13 @@ unsigned char **initGrid(){
 } 
 
 
-void createGrid(){
+void createGrid(int Grid_rows, int Grid_col){
     //TODO: Set a minimum for each dimension
     // Ask for dimention
-    printf("Enter number of rows: "); 
+    /*printf("Enter number of rows: "); 
     scanf("%d", &Grid_rows);
     printf("Enter number of columns: ");
-    scanf("%d", &Grid_col);
+    scanf("%d", &Grid_col);*/
 
     resize_term(Grid_rows, Grid_col);
 
@@ -64,10 +69,9 @@ void createGrid(){
 
 
 // Set initial conditions
-void initial(){
-    unsigned int scenary = 4;
-    printf("Select scenary: "); 
-    scanf("%d", &scenary);
+void initial(int scenary){
+    /*printf("Select scenary: "); 
+    scanf("%d", &scenary);*/
     int i = 0;
     int j = 0;
     switch (scenary) {
@@ -138,7 +142,7 @@ int Neighbors(int x, int y) {
     int Num_neighbors = 0;
     for (int i = x-1; i <= x+1; i++) {
         for (int j = y-1; j <= y+1; j++) {
-            //If outside grid, skip - Kuntaro
+            //If outside grid, skip
             if (i<0 || i>=Grid_rows || j<0 || j>=Grid_col){
                 continue;
             }
@@ -197,21 +201,37 @@ void printGrid(){
             if(grid[i][j] == 1){
                 printw("X");
             } else {
-                printw(" ");
+                printw("-");
             };
         }
         // printf  ("\n");
     }
     refresh();
 }
-
+#define MENU_COUNT 3
 int main() {
     signal(SIGINT, intHandler);
 
-    createGrid();
-    initial();
     initscr();    
-    
+    // Create a new window
+    WINDOW *win = newwin(1000, 1000, 0, 0);
+    // Write some text to the window
+    mvwprintw(win, 0, 0, "Introduce number of rows: ");
+    wscanw(win, "%d", &Grid_rows);
+    mvwprintw(win, 1, 0, "Introduce number of Columns: ");
+    wscanw(win, "%d", &Grid_col);
+    mvwprintw(win, 2, 0, "Select scenary: ");
+    mvwprintw(win, 3, 3, "[1] R-pentomio");
+    mvwprintw(win, 4, 3, "[2] Diehard");
+    mvwprintw(win, 5, 3, "[3] Acorn");
+    mvwprintw(win, 6, 3, "[4] Random\n");
+    wscanw(win, "%d", &scenary); 
+    wrefresh(win); // Display the window
+
+    createGrid(Grid_rows,Grid_col);
+    initial(scenary);
+ 
+    // Keep running until ctrl+C (SIGINT)
     while (keepRunning) {
         printGrid();
         newGrid();
