@@ -235,7 +235,7 @@ int main() {
     while (keepRunning) {
         printGrid();
         newGrid();
-        usleep(100000); // Sleep for 1 second
+        usleep(100000); // Sleep for 0.1 second
     }
     free(grid);
     endwin();
