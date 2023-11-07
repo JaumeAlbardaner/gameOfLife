@@ -12,8 +12,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Team-work Strategy
 // Coder 1 works on repository and code
-// Coder 2 works on code
-// Coder 3 works on report
+// Coder 2 works on code and report
+// Coder 3 works on code and report
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
@@ -26,25 +26,27 @@
 
 // global variables needed
 unsigned char **grid;
+unsigned char **copy;
 
 // Create a space were the game develop
 unsigned int Grid_rows;
 unsigned int Grid_col;
 unsigned int scenary;
 
-
-// Flag that stops game if SIGINT is detected
+// Flag that stops game if SIGINT (ctrl + C) is detected
 static volatile int keepRunning = 1;
 
+// Function that treats the SIGINT flag
 void intHandler(int dummy) {
     keepRunning = 0;
 }
 
+// Initializes a matrix of zeros with size Grid_rows*Grid_col
 unsigned char **initGrid(){
 
     unsigned char **newGrid;
 
-    // Allocate memory for the matrix and set to 0
+    // Generate array of pointers (rows) which point at array of chars (cols)
     newGrid = (unsigned char **)calloc(Grid_rows, sizeof(unsigned char *));
     for (int i = 0; i < Grid_rows; i++) {
         newGrid[i] = (unsigned char *)calloc(Grid_col, sizeof(unsigned char));
@@ -54,32 +56,32 @@ unsigned char **initGrid(){
 } 
 
 
-void createGrid(int Grid_rows, int Grid_col){
-    //TODO: Set a minimum for each dimension
-    // Ask for dimention
-    /*printf("Enter number of rows: "); 
-    scanf("%d", &Grid_rows);
-    printf("Enter number of columns: ");
-    scanf("%d", &Grid_col);*/
-
-    resize_term(Grid_rows, Grid_col);
+// Creates the grid with a security minimum size to ensure no segmentation
+//  fault is received with initialization
+void createGrid(){
+    if(Grid_rows < 10){
+        Grid_rows = 10;
+    }
+    if(Grid_col < 10){
+        Grid_col = 10;
+    }
+    resize_term(Grid_rows, Grid_col); // Upload dims to ncurses
 
     grid = initGrid();
 }
 
 
-// Set initial conditions
+// Given a desired scenary, loads it in a random position inside
+// the grid dimensions.
 void initial(int scenary){
-    /*printf("Select scenary: "); 
-    scanf("%d", &scenary);*/
     int i = 0;
     int j = 0;
     switch (scenary) {
         case 1: // The R-pentomio
             /*
-             XX
-            XX
-             X
+            -XX
+            XX-
+            -X-
             */
             srand(time(NULL));
             i = rand() % (Grid_rows-3) +1; //1;
@@ -93,9 +95,9 @@ void initial(int scenary){
         break;
         case 2: // Diehard
             /*
-                  X 
-            XX
-             X   XXX
+            ------X-
+            XX------
+            -X---XXX
             */
             srand(time(NULL));
             i = rand() % (Grid_rows-3) +1; //1;
@@ -110,9 +112,9 @@ void initial(int scenary){
         break;
         case 3: //Acorn
             /*
-             X
-               X
-            XX  XXX
+            -X-----
+            ---X---
+            XX--XXX
             */
             srand(time(NULL));
             i = rand() % (Grid_rows-3) +1; //1;
@@ -136,13 +138,13 @@ void initial(int scenary){
     }
 }
 
-// All the game is based on counting how many neighbors we have, thats why we will
-// create a function that will count the number of neighbors in each interaction
+// Given a coordinate inside the grid, returns the number
+//  of alive contiguous cells.
 int Neighbors(int x, int y) {
     int Num_neighbors = 0;
     for (int i = x-1; i <= x+1; i++) {
         for (int j = y-1; j <= y+1; j++) {
-            //If outside grid, skip
+            //If outside grid, skip (count as dead)
             if (i<0 || i>=Grid_rows || j<0 || j>=Grid_col){
                 continue;
             }
@@ -150,13 +152,14 @@ int Neighbors(int x, int y) {
             if(i == x && j == y){
                 continue;
             }
-            Num_neighbors += grid[i][j]; // add one if is 1 (neighbor)
+            Num_neighbors += grid[i][j];
         }
     }
     return Num_neighbors;
 }
 
-//Update the grid for each map
+// Update the state of all cells in the grid by 
+// checking the 4 rules of Game of Life 
 void newGrid(){
     unsigned char **temp_grid = initGrid();
     for (int i = 0; i < Grid_rows; i++) {
@@ -174,6 +177,7 @@ void newGrid(){
             else if(neighbors==2){
                 temp_grid[i][j] = grid[i][j];
             }
+            // Reproduction
             else if(neighbors==3){
                 temp_grid[i][j] = 1;
             }
@@ -187,12 +191,14 @@ void newGrid(){
     }
 
     // Free calloc after use
+    for (int i=0; i<Grid_rows; i++){
+      free(temp_grid[i]);
+    }
     free(temp_grid);
 }
 
-// To have a better experience at the moment of visualize the grid, we will create
-// a function that show us the grid but instead of showing us 0 will show a blank
-// space and intead of 1 will present a "X"
+// Prints the grid to terminal where 0s show as "-"
+// and 1s show as "X".
 void printGrid(){
     clear();
     for (int i = 0; i < Grid_rows; i++) {
@@ -204,41 +210,90 @@ void printGrid(){
                 printw("-");
             };
         }
-        // printf  ("\n");
     }
     refresh();
 }
-#define MENU_COUNT 3
+
+// Copies the current state of the grid onto global
+//  variable 'copy' 
+void CopyGrid(){
+    copy = initGrid();
+    for (int i = 0; i < Grid_rows; i++) {
+        for (int j = 0; j < Grid_col; j++) {
+            copy[i][j] = grid[i][j];
+        }
+    }
+}
+
+
 int main() {
+    // Set SIGINT callback function
     signal(SIGINT, intHandler);
 
+    // Create new ncurses window
     initscr();    
-    // Create a new window
-    WINDOW *win = newwin(1000, 1000, 0, 0);
-    // Write some text to the window
-    mvwprintw(win, 0, 0, "Introduce number of rows: ");
-    wscanw(win, "%d", &Grid_rows);
-    mvwprintw(win, 1, 0, "Introduce number of Columns: ");
-    wscanw(win, "%d", &Grid_col);
+    WINDOW *win = newwin(1000, 1000, 0, 0);                 
+    mvwprintw(win, 0, 0, "Introduce number of rows: ");     
+    wscanw(win, "%d", &Grid_rows);                          
+    mvwprintw(win, 1, 0, "Introduce number of Columns: ");  
+    wscanw(win, "%d", &Grid_col);                           
     mvwprintw(win, 2, 0, "Select scenary: ");
     mvwprintw(win, 3, 3, "[1] R-pentomio");
     mvwprintw(win, 4, 3, "[2] Diehard");
     mvwprintw(win, 5, 3, "[3] Acorn");
     mvwprintw(win, 6, 3, "[4] Random\n");
     wscanw(win, "%d", &scenary); 
-    wrefresh(win); // Display the window
+    wrefresh(win);
 
-    createGrid(Grid_rows,Grid_col);
-    initial(scenary);
- 
-    // Keep running until ctrl+C (SIGINT)
+    // Customize window with requested scenery and dimensions
+    createGrid();                       
+    initial(scenary); 
+
+    int loop = 0;
+    
+    // Game loop
     while (keepRunning) {
-        printGrid();
-        newGrid();
-        usleep(100000); // Sleep for 0.1 second
+        loop++;
+        printGrid();    // Plot the grid
+        newGrid();      // Update the grid values 
+        usleep(100000); // Sleep for 0.1 seconds
+
+        // Compare every 30 iterations if the grid is the same
+        // 30 is the minimum comune multiple of the oscillators periods
+        if(loop == 1){
+            CopyGrid();
+        }
+        else if(loop == 30){
+            loop = 0;
+
+            int count = 0;
+
+            // Count how many cells of 'grid' are equal to 'copy'
+            for (int i = 0; i < Grid_rows; i++) {
+                for (int j = 0; j < Grid_col; j++) {
+                    if(copy[i][j] == grid[i][j]){
+                        count += 1;
+                    }
+                }
+            }
+            
+            //If all the grid values are the same then break the loop.
+            if(count == Grid_rows*Grid_col){
+                keepRunning=false;
+            }
+            // Free allocated memory
+            for (int i = 0; i< Grid_rows; i++){
+                free(copy[i]);
+            }
+            free(copy);
+        }
+    }
+    // Free calloc after use
+    for (int i = 0; i< Grid_rows; i++){
+         free(grid[i]);
     }
     free(grid);
+
     endwin();
-    // printf("Caught SIGINT\n");
     return 0;
 }
