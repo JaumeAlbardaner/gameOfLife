@@ -42,4 +42,4 @@ main-debug: main.c game.c
 	gcc  -o $@ $^  $(LDFLAGS) $(CFLAGS) -pg
 
 clean:
-	rm -f main game
+	rm -f main main-debug gmon.out
