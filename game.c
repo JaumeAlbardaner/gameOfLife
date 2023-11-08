@@ -216,8 +216,7 @@ void printGrid(){
 
 // Copies the current state of the grid onto global
 //  variable 'copy' 
-void CopyGrid(){
-    copy = initGrid();
+void copyGrid(){
     for (int i = 0; i < Grid_rows; i++) {
         for (int j = 0; j < Grid_col; j++) {
             copy[i][j] = grid[i][j];
@@ -225,13 +224,9 @@ void CopyGrid(){
     }
 }
 
-
-int main() {
-    // Set SIGINT callback function
-    signal(SIGINT, intHandler);
-
-    // Create new ncurses window
-    initscr();    
+// Function that prompts the user the dimensions of the
+// grid as well as preferred scenario
+void requestVars(){
     WINDOW *win = newwin(1000, 1000, 0, 0);                 
     mvwprintw(win, 0, 0, "Introduce number of rows: ");     
     wscanw(win, "%d", &Grid_rows);                          
@@ -245,12 +240,42 @@ int main() {
     wscanw(win, "%d", &scenary); 
     wrefresh(win);
 
+}
+
+// Function in charge of freeing the 'copy' and 'grid' 
+// memory allocations
+void freeVars(){
+    // Free copy
+    for (int i = 0; i< Grid_rows; i++){
+        free(copy[i]);
+    }
+    free(copy);
+
+    // Free main grid
+    for (int i = 0; i< Grid_rows; i++){
+         free(grid[i]);
+    }
+    free(grid);
+
+}
+
+// Main function, performs all actions required to run the
+// several iterations of the game
+int play() {
+    // Set SIGINT callback function
+    signal(SIGINT, intHandler);
+
+    // Create new ncurses window
+    initscr();
+    requestVars();
+
     // Customize window with requested scenery and dimensions
     createGrid();                       
     initial(scenary); 
 
-    int loop = 0;
-    
+    int loop = -1;
+    copy = initGrid();
+
     // Game loop
     while (keepRunning) {
         loop++;
@@ -258,13 +283,14 @@ int main() {
         newGrid();      // Update the grid values 
         usleep(100000); // Sleep for 0.1 seconds
 
-        // Compare every 30 iterations if the grid is the same
-        // 30 is the minimum comune multiple of the oscillators periods
-        if(loop == 1){
-            CopyGrid();
+        // Compare if the grid is the same for every oscillator period        
+        if(loop == 0){
+            copyGrid();
         }
-        else if(loop == 30){
-            loop = 0;
+        else if(loop == 2 || loop == 3 || loop == 15){
+            if (loop == 15){
+                loop = -1;
+            }
 
             int count = 0;
 
@@ -272,7 +298,7 @@ int main() {
             for (int i = 0; i < Grid_rows; i++) {
                 for (int j = 0; j < Grid_col; j++) {
                     if(copy[i][j] == grid[i][j]){
-                        count += 1;
+                        count++;
                     }
                 }
             }
@@ -281,19 +307,10 @@ int main() {
             if(count == Grid_rows*Grid_col){
                 keepRunning=false;
             }
-            // Free allocated memory
-            for (int i = 0; i< Grid_rows; i++){
-                free(copy[i]);
-            }
-            free(copy);
         }
     }
-    // Free calloc after use
-    for (int i = 0; i< Grid_rows; i++){
-         free(grid[i]);
-    }
-    free(grid);
 
+    freeVars();
     endwin();
     return 0;
 }

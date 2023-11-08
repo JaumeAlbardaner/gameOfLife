@@ -1,0 +1,11 @@
+void intHandler(int dummy);
+unsigned char **initGrid();
+void createGrid();
+void initial(int scenary);
+int Neighbors(int x, int y);
+void newGrid();
+void printGrid();
+void copyGrid();
+void requestVars();
+void freeVars();
+int play();

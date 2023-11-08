@@ -101,13 +101,13 @@ git clone https://github.com/JaumeAlbardaner/gameOfLife.git
 
 Compile the C code:
 ```
-make
+cd ~/git && make
 ```
 
 Run it :tada:
 
 ``` 
-cd ~/git/gameOfLife && ./gameDyn
+cd ~/git/gameOfLife && ./main
 ```
 
 Once you run it, you may select the dimensions of the world as well as what structure you want to simulate from:
