@@ -101,7 +101,7 @@ git clone https://github.com/JaumeAlbardaner/gameOfLife.git
 
 Compile the C code:
 ```
-cd ~/git && make
+cd ~/git/gameOfLife && make
 ```
 
 Run it :tada:
