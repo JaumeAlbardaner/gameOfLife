@@ -1,21 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GAME EXPLANATION
-// It consists of a grid of cells which, based on a few mathematical rules, can live, die or multiply. 
-// Depending on the initial conditions, the cells form various patterns throughout the course of the game.
-//
-// Each cell with one or no neighbors dies, as if by solitude.
-// Each cell with four or more neighbors dies, as if by overpopulation.
-// Each cell with two or three neighbors survives.
-// Each dead cell with exactly three neighbors becomes a live cell.
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Team-work Strategy
-// Coder 1 works on repository and code
-// Coder 2 works on code and report
-// Coder 3 works on code and report
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -36,11 +18,13 @@ unsigned int scenary;
 // Flag that stops game if SIGINT (ctrl + C) is detected
 static volatile int keepRunning = 1;
 
+// Coder 1
 // Handles SIGINT flags to stop the execution of the game.
 void intHandler(int dummy) {
     keepRunning = 0;
 }
 
+// Coder 1
 /**
  * Allocates dynamically in memory a grid of Grid_rows x Grid_col unsigned chars. 
  * These come initialized with a value of 0.
@@ -61,6 +45,7 @@ unsigned char **initGrid(){
     return newGrid;
 } 
 
+// Coder 1
 // Initializes the grid with size Grid_rows x Grid_col with a minimum size
 //  of 10 per axis.
 void createGrid(){
@@ -77,7 +62,7 @@ void createGrid(){
     grid = initGrid();
 }
 
-
+// Coder 2
 /**
  * Initializes the grid with the requested scenario, which is offset randomly.
  *
@@ -149,6 +134,7 @@ void initial(int scenary){
     }
 }
 
+// Coder 2
 /**
  * Computes the sum of alive neighbors of cell (x,y).
  *
@@ -174,6 +160,7 @@ int Neighbors(int x, int y) {
     return Num_neighbors;
 }
 
+// Coder 1
 // Update the state of all cells in the grid by 
 // checking the 4 rules of Game of Life 
 void newGrid(){
@@ -213,6 +200,7 @@ void newGrid(){
     free(temp_grid);
 }
 
+// Coder 2
 // Prints the grid to terminal where 0s show as "-"
 // and 1s show as "X".
 void printGrid(){
@@ -230,6 +218,7 @@ void printGrid(){
     refresh();
 }
 
+// Coder 2
 // Copies the current state of the grid onto global
 //  variable 'copy' 
 void copyGrid(){
@@ -240,6 +229,7 @@ void copyGrid(){
     }
 }
 
+// Coder 2
 // Function that prompts the user the dimensions of the
 // grid as well as preferred scenario
 void requestVars(){
@@ -268,6 +258,7 @@ void requestVars(){
 
 }
 
+// Coder 3
 // Frees dynamically allocated memory in variables `copy` and `grid`
 void freeVars(){
     // Free copy
