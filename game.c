@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include <signal.h> // To catch SIGINT
 #include <ncurses.h>
-
+#include <ctype.h> // To check type of input
 
 // global variables needed
 unsigned char **grid;
@@ -64,6 +64,7 @@ unsigned char **initGrid(){
 // Initializes the grid with size Grid_rows x Grid_col with a minimum size
 //  of 10 per axis.
 void createGrid(){
+    
     // Security minimum size to ensure no segmentation fault
     if(Grid_rows < 10){
         Grid_rows = 10;
@@ -242,9 +243,9 @@ void copyGrid(){
 // Function that prompts the user the dimensions of the
 // grid as well as preferred scenario
 void requestVars(){
-    WINDOW *win = newwin(1000, 1000, 0, 0);                 
+    WINDOW *win = newwin(1000, 1000, 0, 0);
     mvwprintw(win, 0, 0, "Introduce number of rows: ");     
-    wscanw(win, "%d", &Grid_rows);                          
+    wscanw(win, "%d", &Grid_rows);
     mvwprintw(win, 1, 0, "Introduce number of Columns: ");  
     wscanw(win, "%d", &Grid_col);                           
     mvwprintw(win, 2, 0, "Select scenary: ");
@@ -253,6 +254,16 @@ void requestVars(){
     mvwprintw(win, 5, 3, "[3] Acorn");
     mvwprintw(win, 6, 3, "[4] Random\n");
     wscanw(win, "%d", &scenary); 
+
+    // Check correctness of input or force stable case
+    if (!isdigit(Grid_rows))
+    {
+        Grid_rows = 10;
+    }
+    if (!isdigit(Grid_col))
+    {
+        Grid_rows = 10;
+    }
     wrefresh(win);
 
 }
