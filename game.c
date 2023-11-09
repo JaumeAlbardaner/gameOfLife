@@ -263,6 +263,7 @@ void freeVars(){
 
 }
 
+// Coder 2&3
 /**
  * Performs all actions required to run the game.
  *
