@@ -36,12 +36,18 @@ unsigned int scenary;
 // Flag that stops game if SIGINT (ctrl + C) is detected
 static volatile int keepRunning = 1;
 
-// Function that treats the SIGINT flag
+// Handles SIGINT flags to stop the execution of the game.
 void intHandler(int dummy) {
     keepRunning = 0;
 }
 
-// Initializes a matrix of zeros with size Grid_rows*Grid_col
+/**
+ * Allocates dynamically in memory a grid of Grid_rows x Grid_col unsigned chars. 
+ * These come initialized with a value of 0.
+ *
+ * @param None
+ * @return `unsigned char**` - Pointer to the first value of the grid.
+ */
 unsigned char **initGrid(){
 
     unsigned char **newGrid;
@@ -55,10 +61,10 @@ unsigned char **initGrid(){
     return newGrid;
 } 
 
-
-// Creates the grid with a security minimum size to ensure no segmentation
-//  fault is received with initialization
+// Initializes the grid with size Grid_rows x Grid_col with a minimum size
+//  of 10 per axis.
 void createGrid(){
+    // Security minimum size to ensure no segmentation fault
     if(Grid_rows < 10){
         Grid_rows = 10;
     }
@@ -71,8 +77,12 @@ void createGrid(){
 }
 
 
-// Given a desired scenary, loads it in a random position inside
-// the grid dimensions.
+/**
+ * Initializes the grid with the requested scenario, which is offset randomly.
+ *
+ * @param scenary `int` : Number of the desired scenario
+ * @return None.
+ */
 void initial(int scenary){
     int i = 0;
     int j = 0;
@@ -138,8 +148,13 @@ void initial(int scenary){
     }
 }
 
-// Given a coordinate inside the grid, returns the number
-//  of alive contiguous cells.
+/**
+ * Computes the sum of alive neighbors of cell (x,y).
+ *
+ * @param x `int` X coordinate.
+ * @param y `int` Y coordinate.
+ * @return `int` - sum of alive neighbors of cell (x,y).
+ */
 int Neighbors(int x, int y) {
     int Num_neighbors = 0;
     for (int i = x-1; i <= x+1; i++) {
@@ -242,8 +257,7 @@ void requestVars(){
 
 }
 
-// Function in charge of freeing the 'copy' and 'grid' 
-// memory allocations
+// Frees dynamically allocated memory in variables `copy` and `grid`
 void freeVars(){
     // Free copy
     for (int i = 0; i< Grid_rows; i++){
@@ -259,8 +273,12 @@ void freeVars(){
 
 }
 
-// Main function, performs all actions required to run the
-// several iterations of the game
+/**
+ * Performs all actions required to run the game.
+ *
+ * @param None
+ * @return `int` - 0 if the simulation ended successfully, 1 otherwise.
+ */
 int play() {
     // Set SIGINT callback function
     signal(SIGINT, intHandler);
