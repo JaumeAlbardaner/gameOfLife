@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <signal.h> // To catch SIGINT
 #include <ncurses.h>
-#include <ctype.h> // To check type of input
 
 // global variables needed
 unsigned char **grid;
@@ -244,18 +243,7 @@ void requestVars(){
     mvwprintw(win, 5, 3, "[3] Acorn");
     mvwprintw(win, 6, 3, "[4] Random\n");
     wscanw(win, "%d", &scenary); 
-
-    // Check correctness of input or force stable case
-    if (!isdigit(Grid_rows))
-    {
-        Grid_rows = 10;
-    }
-    if (!isdigit(Grid_col))
-    {
-        Grid_rows = 10;
-    }
     wrefresh(win);
-
 }
 
 // Coder 3
