@@ -152,8 +152,6 @@ Once you run it, you may select the dimensions of the world as well as what stru
 
 ## 3. Troubleshooting
 
-So far only the **gameDyn** executable has been used enough to find any issues.
-
 * The only issue that has been found is that requesting a large grid size may result in the Game of Life not appearing in its entirety on the screen. 
 
     **Fix** Set a smaller size for the board, or try rerunning the game (maybe it was just a bad unlucky initialization).
